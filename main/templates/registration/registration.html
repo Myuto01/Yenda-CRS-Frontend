@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cheap Bus Tickets to Kitwe | Yenda</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .registration-container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 300px;
+        }
+        h2 {
+            text-align: center;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="password"],
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        input[type="submit"] {
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="registration-container">
+        <h2>Registration</h2>
+        <form  method="post" id="registeration_form">
+            {% csrf_token %}
+            <input type="text" name="company_name" placeholder="Company Name" required>
+            <input type="text" name="contact_person" placeholder="Contact Person" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="tel" name="phone_number" placeholder="Phone Number" required>
+            <input type="text" name="business_licence_number" placeholder="Business License Number" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <input type="password" name="password2" placeholder="Confirm Password" required>
+            <input type="submit" value="Register">
+        </form>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $("#registeration_form").submit(function(e) {
+            console.log("Submitted");
+            e.preventDefault(); // Prevent default form submission
+
+            // Get form data 
+            const formData = {
+                company_name: $("input[name='company_name']").val(),
+                contact_person: $("input[name='contact_person']").val(),
+                email: $("input[name='email']").val(),
+                phone_number: $("input[name='phone_number']").val(),
+                business_licence_number: $("input[name='business_licence_number']").val(),
+                password: $("input[name='password']").val(),
+                password2: $("input[name='password2']").val(),
+            };
+
+            // Send AJAX request
+            $.ajax({
+                url: "https://yenda-crs-api-2.onrender.com/api/v1/auth/bus_operator_registeration",
+                type: "POST",
+                contentType: "application/vnd.api+json", 
+                data: JSON.stringify({ data: { type: "RegistrationAPIView", attributes: formData } }), 
+                success: function(response) {
+                    console.log("Response:", response); 
+                  // Save tokens in local storage
+                    localStorage.setItem("access_token", response.access_token);
+                    localStorage.setItem("refresh_token", response.refresh_token);
+
+                    // Redirect to desired URL after successful registration
+                    window.location.href = "{% url 'dashboard' %}";
+                },
+                error: function(xhr, status, error) {   
+                    // Handle errors
+                    console.error("Registration error", error);
+                    var jsonResponse = JSON.parse(xhr.responseText);
+                    var errorMessage = jsonResponse.errors.detail;
+                    // Display error message
+                    $(".error-message").text(errorMessage);
+                }
+            });
+        });
+
+     
+
+    });
+</script>
+</body>
+</html>
