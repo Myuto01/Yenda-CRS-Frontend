@@ -97,40 +97,68 @@
         border: 1px solid orangered; 
     }
 
+    .error-message {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .success-message {
+            background: rgb(0, 255, 0);
+            color: black; 
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 9999;
+            display: none;
+        }
+
 </style>
 </head>
 <body>
+    <div id="success-message" class="success-message"></div>
+
     <div class="input-container">
         <h2 style="text-align: center;">New Bus Details</h2><br>
         <form method="post" id="create_bus_form" enctype="multipart/form-data">
             <label for="bus_type">Bus Type:</label>
             <input type="text" name="bus_type" id="bus_type" placeholder="Scania" required><br>
-        
+            <div id="bus_type_error" class="error-message"></div>
+
             <label for="total_seats">Total Seats:</label>
             <input type="number" name="total_seats" id="total_seats" placeholder="50" required><br>
-        
+            <div id="bus_type_error" class="error-message"></div>
+
             <label for="number_plate">Number Plate:</label>
             <input type="text" name="number_plate" id="number_plate" placeholder="ABC 1234" required><br>
-        
+            <div id="number_plate_error" class="error-message"></div>
+
             <label for="features">Features:</label>
             <select name="features[]" id="features" multiple>
                 <!-- Features will be populated dynamically here -->
             </select><br>
-        
+            <div id="features_error" class="error-message"></div>
+
             <label for="customFeatureInput">Custom Feature:</label>
             <input type="text" id="customFeatureInput" placeholder="Enter custom feature">
         
             <button type="button" id="addFeatureBtn">+ Add</button>
-        
+            <div id="customFeatureInput_error" class="error-message"></div>
+
             <label for="status">Status:</label>
             <select name="status" id="status">
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
             </select><br>
-        
+            <div id="status_error" class="error-message"></div>
+
             <label for="seat_picture">Seat Picture:</label>
             <input type="file" name="seat_picture" id="seat_picture" accept="image/*"><br>
-        
+            <div id="seat_picture_error" class="error-message"></div>
+
             <input type="submit" id="submitButton" value="Submit">
         </form>
         
@@ -201,6 +229,7 @@
         success: function(response) {
         console.log("Custom Feature created:", response);
         $('#addFeatureBtn').text('Add');
+        displaySuccessMessage('Custom Feature created.');
 
 
         // Extract the ID and attributes from the data object
@@ -234,6 +263,7 @@
         error: function(xhr, status, error) {
             console.error('Error creating custom feature:', error);
             $('#addFeatureBtn').text('Add');
+            displayErrorMessages(xhr);
         }
     });
 }
@@ -290,13 +320,37 @@ $("#create_bus_form").submit(function(e) {
         success: function(response) {
             console.log('Success:', response);
             $('#submitButton').val('Submit');
+            displaySuccessMessage('New bus successfully created.');
+
         },
         error: function(xhr, status, error) {
             console.error('Error:', error);
             $('#submitButton').val('Submit');
+            displayErrorMessages(xhr);
         }
     });
 });
+
+    function displaySuccessMessage(message) {
+        var successMessageDiv = $('#success-message');
+        successMessageDiv.text(message);
+        successMessageDiv.show();
+
+        setTimeout(function() {
+            successMessageDiv.hide();
+        }, 5000);
+    }
+
+    function displayErrorMessages(xhr) {
+        var errors = xhr.responseJSON.errors;
+        for (var field in errors) {
+            if (errors.hasOwnProperty(field)) {
+                $('#' + field + '_error').text(errors[field]);
+            }
+        }
+    }
+
+
 });
     </script>
 </body>

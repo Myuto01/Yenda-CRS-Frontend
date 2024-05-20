@@ -335,6 +335,8 @@ color: white
     </style>
 </head>
 <body>
+    <div id="success-message" class="success-message"></div>
+
     <h3 class="trips-header">Order List</h3>
     <a href="{% url 'new-order' %}"><button id="addTripButton"> + New Order </button></a>
      
@@ -380,19 +382,25 @@ color: white
             <form id="trip_create_form">
                 <label for="driver_name">Driver Name</label><br>
                 <input type="text" name="driver_name" id="driver_name" placeholder="Enter Driver Name" required><br><br>
-                
+                <div id="trip_origin_error" class="error-message"></div>
+
                 <label for="license_number">Licence Number</label><br>
                 <input type="text" name="license_number" id="license_number" placeholder="Enter Licence Number" required><br><br>
-                
+                <div id="trip_origin_error" class="error-message"></div>
+
                 <label for="nrc_number">NRC Number</label><br>
                 <input type="text" name="nrc_number" id="nrc_number" placeholder="Enter NRC Number" required><br><br>
-                
+                <div id="trip_origin_error" class="error-message"></div>
+
                 <label for="phone_number">Phone Number</label><br>
                 <input type="tel" name="phone_number" id="phone_number" placeholder="Enter Phone Number" required><br><br>
-                
+                <div id="trip_origin_error" class="error-message"></div>
+
                 <label for="passport_number">Passport Number</label><br>
                 <input type="text" name="passport_number" id="passport_number" placeholder="Enter Passport Number" required><br><br>
-                <a href="#">...more</a><br><br>
+                <div id="trip_origin_error" class="error-message"></div>
+
+                <a href="#" style="color: #;">...more</a><br><br>
                 <input type="submit" id="tripeditsubmitButton" value="Submit">
             </form>
         </div>

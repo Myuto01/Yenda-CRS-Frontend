@@ -79,9 +79,24 @@
       border-color: #6284FF;
     }
 
+    .success-message {
+            background: rgb(0, 255, 0);
+            color: black; 
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 9999;
+            display: none;
+        }
+
+
     </style>
 </head>
 <body>
+<div id="success-message" class="success-message"></div>
 <h3 class="driver-details-header">Add Details</h3>
 <div class="driver-create-form-container">
     <form id="driver_create_form">
@@ -89,31 +104,40 @@
 
         <label for="driver_name">Driver Name</label>
         <input type="text" id="driver_name" name="driver_name" placeholder="John Doe" required>
-    
+        <div id="driver_name_error" class="error-message"></div>
+
         <label for="license_number">License Number*</label>
         <input type="text" id="license_number" name="license_number" placeholder="1234-5678-90" required>
-    
+        <div id="license_number_error" class="error-message"></div>
+
         <label for="nrc_number">NRC Number*</label>
         <input type="text" id="nrc_number" name="nrc_number" placeholder="805154/10/1" required>
-    
+        <div id="nrc_number_error" class="error-message"></div>
+
         <label for="phone_number">Phone Number*</label>
         <input type="tel" id="phone_number" name="phone_number" placeholder="0966142238" required>
-    
+        <div id="phone_number_error" class="error-message"></div>
+
         <label for="passport_number">Passport Number</label>
         <input type="text" id="passport_number" name="passport_number" placeholder="134567">
-        
+        <div id="passport_number_error" class="error-message"></div>
+
         <div class="driver-details-file">
             <!-- Include File inputs as well -->
             <h3 style="text-align: center;">Driver Documents</h3><br>
             <p style="text-align: center;">Documents should be clear</p><br>
             <label for="license_image">License </label>
             <input type="file" id="license_image" name="license_image">
-        
+            <div id="license_image_error" class="error-message"></div>
+
             <label for="nrc_image">NRC</label>
             <input type="file" id="nrc_image" name="nrc_image">
-        
+            <div id="nrc_image_error" class="error-message"></div>
+
             <label for="passport_image">Passport</label>
             <input type="file" id="passport_image" name="passport_image">
+            <div id="passport_image_error" class="error-message"></div>
+
         </div>
        
         <input type="submit" id="drivercreatesubmitButton" value="Submit">
@@ -176,14 +200,33 @@
             },
             success: function(response) {
                 console.log('Success:', response);
-                // Handle success response
+                displaySuccessMessage('New order successfully created.');
             },
             error: function(xhr, status, error) {
                 console.error('Error:', error);
-                // Handle error response
+                displayErrorMessages(xhr);
             }
         });
     });
+
+    function displaySuccessMessage(message) {
+        var successMessageDiv = $('#success-message');
+        successMessageDiv.text(message);
+        successMessageDiv.show();
+
+        setTimeout(function() {
+            successMessageDiv.hide();
+        }, 5000);
+    }
+
+    function displayErrorMessages(xhr) {
+        var errors = xhr.responseJSON.errors;
+        for (var field in errors) {
+            if (errors.hasOwnProperty(field)) {
+                $('#' + field + '_error').text(errors[field]);
+            }
+        }
+    }
 });
 
     </script>

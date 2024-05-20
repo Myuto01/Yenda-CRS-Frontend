@@ -80,9 +80,30 @@
             /* padding: 94px; */
             width: 89%;
         }
+
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .success-message {
+            background: rgb(0, 255, 0);
+            color: black; 
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 9999;
+            display: none;
+        }
     </style>
 </head>
 <body>
+<div id="success-message" class="success-message"></div>
+
 <div class="trip-create">
     <form id="trip_create_form">
         <h3 class="new-trip">New Trip</h3>
@@ -113,18 +134,23 @@
         <div class="trip-details-entry-form">
             <label for="origin" class="trip-origin-label">From</label>
             <input type="text" name="origin" id="origin" placeholder="Enter Origin" required>
-            
+            <div id="origin_error" class="error-message"></div>
+
             <label for="destination" class="trip-destination-label">To</label>
             <input type="text" name="destination" id="destination" placeholder="Enter Destination" required>
-            
+            <div id="destination_error" class="error-message"></div>
+
             <label for="departure_date" class="trip-departure-date">Departure Date</label>
             <input type="date" name="departure_date" id="departure_date" placeholder="Enter departure date" required>
-            
+            <div id="departure_date_error" class="error-message"></div>
+
             <label for="departure_time" class="trip-departure-time-label">Departure Time</label>
             <input type="time" name="departure_time" id="departure_time" placeholder="Enter time of departure" required>
+            <div id="departure_time_error" class="error-message"></div>
 
             <label for="price" class="trip-price-label">Price</label>
             <input type="number" name="price" id="price" placeholder="Enter Price" required>
+            <div id="price_error" class="error-message"></div>
 
         </div>
         <input type="submit" id="tripcreatesubmitButton" value="Submit">
@@ -299,13 +325,34 @@
                 success: function(response) {
                     console.log('Success:', response);
                     $('#tripcreatesubmitButton').val('Submit');
+                    displaySuccessMessage('Trip successfully created.');
                 },
                 error: function(xhr, status, error) {
                     console.error('Error:', error);
                     $('#tripcreatesubmitButton').val('Submit');
+                    displayErrorMessages(xhr);
 
                 }
             });
+
+            function displaySuccessMessage(message) {
+                var successMessageDiv = $('#success-message');
+                successMessageDiv.text(message);
+                successMessageDiv.show();
+
+                setTimeout(function() {
+                    successMessageDiv.hide();
+                }, 5000);
+            }
+
+            function displayErrorMessages(xhr) {
+                var errors = xhr.responseJSON.errors;
+                for (var field in errors) {
+                    if (errors.hasOwnProperty(field)) {
+                        $('#' + field + '_error').text(errors[field]);
+                    }
+                }
+            }
         });
     </script>
 </body>

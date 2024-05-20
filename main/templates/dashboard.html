@@ -142,40 +142,51 @@
             <div class="new_order_a">
                 <label for="trip_origin">Origin:</label>
                 <input type="text" name="trip_origin" id="trip_origin" placeholder="Enter trip origin" required><br>
-                
+                <div id="trip_origin_error" class="error-message"></div>
+
                 <label for="trip_destination">Destination:</label>
                 <input type="text" name="trip_destination" id="trip_destination" placeholder="Enter trip destination" required><br>
-                
+                <div id="trip_destination_error" class="error-message"></div>
+
                 <label for="trip_date">Date:</label>
                 <input type="date" name="trip_date" id="trip_date" required><br>
-                
+                <div id="trip_date_error" class="error-message"></div>
+
                 <label for="trip_time">Time:</label>
                 <input type="time" name="trip_time" id="trip_time" placeholder="Enter trip destination" required><br>
-                
+                <div id="trip_time_error" class="error-message"></div>
+
                 <label for="busSelect">Select Bus:</label>
                 <select name="busSelect" id="busSelect" required>
                     <option value="" disabled selected hidden>Select bus</option>
                     
                 </select><br>
+                <div id="busSelect_error" class="error-message"></div>
+
 
             </div>
 
             <div class="new_order_b">
                 <label for="passenger_name">Passenger Name:</label>
                 <input type="text" name="passenger_name" id="passenger_name" placeholder="Enter passenger name" required><br>
-            
+                <div id="passenger_name_error" class="error-message"></div>
+
                 <label for="passenger_phonenumber">Passenger Phone Number:</label>
                 <input type="tel" name="passenger_phonenumber" id="passenger_phonenumber" placeholder="Enter phone number" required><br>
-                
+                <div id="passenger_phonenumber_error" class="error-message"></div>
+
                 <label for="passenger_seatnumber">Seat Number:</label>
                 <input type="number" name="passenger_seatnumber" id="passenger_seatnumber" placeholder="Enter seat number" required><br>
-            
+                <div id="passenger_seatnumber_error" class="error-message"></div>
+
                 <label for="payment_method">Payment Method:</label>
                 <select name="payment_method" id="payment_method" required>
                     <option value="" disabled selected hidden>Choose payment method</option>
                     <option value="Cash">Cash</option>
                     <option value="Mobile Money">Mobile Money</option>
                 </select><br>
+                <div id="payment_method_error" class="error-message"></div>
+
         </div>
 
             <input type="submit" value="Proceed" id="newOrderSubmitButton">
@@ -316,10 +327,11 @@
                         },
                         success: function(response) {
                             console.log('Response:', response);
+                            displaySuccessMessage('New order successfully created.');
                         },
                         error: function(xhr, status, error) {
                             console.error('Error submitting form:', error);
-                            // Handle error response
+                            displayErrorMessages(xhr);
                         }
                     });
                 }
@@ -337,12 +349,33 @@
                         },
                         success: function(response) {
                             console.log('Response:', response);
+                            displaySuccessMessage('New order successfully created.');
+
                         },
                         error: function(xhr, status, error) {
                             console.error('Error submitting form:', error);
-                            // Handle error response
+                            displayErrorMessages(xhr);
                         }
                     });
+                }
+
+                function displaySuccessMessage(message) {
+                    var successMessageDiv = $('#success-message');
+                    successMessageDiv.text(message);
+                    successMessageDiv.show();
+
+                    setTimeout(function() {
+                        successMessageDiv.hide();
+                    }, 5000);
+                }
+
+                function displayErrorMessages(xhr) {
+                    var errors = xhr.responseJSON.errors;
+                    for (var field in errors) {
+                        if (errors.hasOwnProperty(field)) {
+                            $('#' + field + '_error').text(errors[field]);
+                        }
+                    }
                 }
     });
 </script>

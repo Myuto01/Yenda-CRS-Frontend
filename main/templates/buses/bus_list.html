@@ -268,6 +268,22 @@
             border-radius: 10px;
         }
 
+        .error-message-global {
+            background: rgb(255, 0, 0);
+            color: white;
+        }
+
+        .error-message-global {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 9999;
+            display: none;
+        }
+
         #submitButton {
             border-radius: 20px;
             background: orangered;
@@ -281,6 +297,8 @@
     </style>
 </head>
 <body>
+    <div id="global-error-message" class="error-message-global"></div>
+
     <h3 class="trips-header">Bus List</h3>
     <button id="addTripButton"> + Add </button>
     <table id="tripScheduleTable">
@@ -375,6 +393,7 @@
         },
         error: function(xhr, status, error) {
             console.error("Error fetching features:", error);
+            displayGlobalErrorMessage(xhr);
         }
     });
 
@@ -433,6 +452,7 @@ $('#features').select2({
         },
         error: function(xhr, status, error) {
             console.error("Error fetching features:", error);
+            displayGlobalErrorMessage(xhr);
         }
     });
 
@@ -498,6 +518,7 @@ $('#features').select2({
         error: function(xhr, status, error) {
             console.error('Error creating custom feature:', error);
             $('#addFeatureBtn').text('Add');
+            displayGlobalErrorMessage(xhr);
         }
     });
 }
@@ -678,6 +699,7 @@ $(document).on('click', '#tripDelete', function() {
             },
             error: function(xhr, status, error) {
                 console.error('Error:', error);
+                displayGlobalErrorMessage(xhr);
             },
         });
 });
@@ -763,17 +785,31 @@ $(document).on('click', '#submitButton', function(e) {
             $('#tripScheduleBody').find('tr.trip-selected td#busType').text(response.data.attributes.bus_type);
 
             $('#tripScheduleBody').find('tr.trip-selected td#Features').text(response.data.attributes.features ? response.data.attributes.features.map(feature => feature.name).join(', ') : '');
-
-
-
-
         },
         error: function(xhr, status, error) {
             console.error('Error:', error);
             $('#submitButton').val('Submit');
+            displayGlobalErrorMessage(xhr);
         }
     });
 });
+
+    function displayGlobalErrorMessage(xhr) {
+        var errorMessage = 'An unknown error occurred.';
+        if (xhr.responseJSON && xhr.responseJSON.message) {
+            errorMessage = xhr.responseJSON.message;
+        } else if (xhr.responseText) {
+            errorMessage = xhr.responseText;
+        }
+
+        var globalErrorMessageDiv = $('#global-error-message');
+        globalErrorMessageDiv.text(errorMessage);
+        globalErrorMessageDiv.show();
+
+        setTimeout(function() {
+            globalErrorMessageDiv.hide();
+        }, 5000);
+    }
     
 });
     </script>

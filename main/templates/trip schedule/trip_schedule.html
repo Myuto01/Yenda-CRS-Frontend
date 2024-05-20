@@ -9,7 +9,7 @@
     <title>{% block title %} Trip Schedule {% endblock %}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
-   <style>
+    <style>
          .trips-header {
             position: relative;
             top: 185px;
@@ -276,19 +276,30 @@
             width: 181px;
         }
 
-        #error-message {
+        .error-message {
             color: red;
-            font-weight: bold;
-            position: relative;
-            top: 94px;
-            left: 111px;
+            font-size: 14px;
+            margin-top: 5px;
         }
 
+        .success-message {
+            background: rgb(0, 255, 0);
+            color: black; 
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 9999;
+            display: none;
+        }
     </style>
 </head>
 
 <body>
-    <div id="error-message"></div>
+
+    <div id="success-message" class="success-message"></div>
 
     <h3 class="trips-header">Trips</h3>
     <button id="addTripButton"> + Add </button>
@@ -335,26 +346,32 @@
             <span class="close-edit">&times;</span> 
             <form id="trip_create_form">
 
-                <label for="orign">Driver</label><br>
+                <label for="driver">Driver</label><br>
                 <select name="driver" id="driver-dropdown">
                     <!-- Options will be populated dynamically by JavaScript -->
                 </select><br><br>   
+                <div id="driver_error" class="error-message"></div>
 
-                <label for="orign">Origin</label><br>
+                <label for="origin">Origin</label><br>
                 <input type="text" name="origin" id="origin" placeholder="Enter Origin" required><br><br>
-                
+                <div id="origin_error" class="error-message"></div>
+
                 <label for="destination">Destination</label><br>
                 <input type="text" name="destination" id="destination" placeholder="Enter Destination" required><br><br>
-                
+                <div id="destination_error" class="error-message"></div>
+
                 <label for="departure_date">Departure Date</label><br>
                 <input type="date" name="departure_date" id="departure_date" placeholder="Enter departure date" required><br><br>
-                
+                <div id="departure_date_error" class="error-message"></div>
+
                 <label for="departure_time">Departure Time</label><br>
                 <input type="time" name="departure_time" id="departure_time" placeholder="Enter time of departure" required><br><br>
-                
+                <div id="departure_time_error" class="error-message"></div>
+
                 <label for="price">Price</label><br>
                 <input type="number" name="price" id="price" placeholder="Enter Price" required><br><br>
-        
+                <div id="price_error" class="error-message"></div>
+
                 <input type="submit" style="cursor: pointer;" id="tripeditsubmitButton" value="Save">
             </form>
         </div>
@@ -372,7 +389,7 @@
     const access_token = localStorage.getItem('access_token')
     
     $.ajax({
-        url: "/api/v1/trips-schedule/",
+        url: "https://yenda-crs-api-2.onrender.com/api/v1/trips-schedule/",
         type: "GET",
         beforeSend: function(xhr) {
             xhr.setRequestHeader("Authorization", "JWT " + access_token); 
@@ -442,6 +459,8 @@ $.ajax({
                 console.error("Error fetching features:", error);
             }
         });
+
+       
 
 
 // Add click event listener to table rows
@@ -681,11 +700,12 @@ $('#tripScheduleBody').on('click', 'tr', function() {
             },
             success: function(response) {
                 console.log('Success:', response);
-                
+                displaySuccessMessage(' Deleted successfully.');
+
             },
             error: function(xhr, status, error) {
                 console.error('Error:', error);
-                $('#error-message').text('Error: ' + error.message);
+                displayErrorMessages(xhr);
             },
         });
 });
@@ -738,7 +758,8 @@ $("#tripDetailsModal").on("click", ".trip-schedule-save", function(e) {
         },
         success: function(response) {
             console.log('Success:', response);
-            
+            displaySuccessMessage('Updated Successfully.');
+
             $('#tripScheduleBody').find('tr.trip-selected td#tripStatus').text(response.data.success.trip_status);
         },
         error: function(xhr, status, error) {
@@ -747,6 +768,8 @@ $("#tripDetailsModal").on("click", ".trip-schedule-save", function(e) {
         complete: function() {
             $('.trip-schedule-save').val('Save'); // Reset button text
             $('#tripDetailsModal').hide(); // Hide modal after saving
+            displayErrorMessages(xhr);
+
         }
     });
 });
@@ -793,8 +816,6 @@ $("#tripDetailsModal").on("click", ".trip-schedule-save", function(e) {
             "driver": { "driver_name": $('#driver-dropdown').val() } // Provide driver ID in a nested dictionary
         };
 
-
-
         // Convert the payload object to a JSON string
         var payloadString = JSON.stringify(payload);
 
@@ -811,6 +832,8 @@ $("#tripDetailsModal").on("click", ".trip-schedule-save", function(e) {
             },
             success: function(response) {
                 console.log('Success:', response);
+                displaySuccessMessage('Successfully saved.');
+
                 $('#tripScheduleBody').find('tr.trip-selected td#tripOrigin').text(response.data.success.origin);
 
                 $('#tripScheduleBody').find('tr.trip-selected td#tripDestination').text(response.data.success.destination);
@@ -824,11 +847,31 @@ $("#tripDetailsModal").on("click", ".trip-schedule-save", function(e) {
             },
             error: function(xhr, status, error) {
                 console.error('Error:', error);
+                displayErrorMessages(xhr);
                 $('#tripeditsubmitButton').val('Save');
 
             },
         });
 });
+            function displaySuccessMessage(message) {
+                var successMessageDiv = $('#success-message');
+                successMessageDiv.text(message);
+                successMessageDiv.show();
+
+                setTimeout(function() {
+                    successMessageDiv.hide();
+                }, 5000);
+            }
+
+            function displayErrorMessages(xhr) {
+                var errors = xhr.responseJSON.errors;
+                for (var field in errors) {
+                    if (errors.hasOwnProperty(field)) {
+                        $('#' + field + '_error').text(errors[field]);
+                    }
+                }
+            }
+
     });
     </script>
 </body>
