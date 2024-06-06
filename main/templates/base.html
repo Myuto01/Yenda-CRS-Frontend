@@ -431,6 +431,15 @@ body.dark {
               <span class="navlink">New Order</span>
             </a>
           </li>
+
+          <li class="item">
+              <a href="#" class="nav_link" id="logoutButton">
+                <span class="navlink_icon">
+                  <i class='bx bx-log-out'></i>
+                </span>
+                <span class="navlink">Logout</span>
+              </a>
+          </li>
         </ul>
 
         <!-- Sidebar Open / Close -->
@@ -502,6 +511,17 @@ submenuItems.forEach((item, index) => {
     });
   });
 });
+
+            $('#logoutButton').on('click', function(event) {
+                event.preventDefault(); 
+                
+                // Remove specific items from local storage
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('refresh_token'); 
+                
+                // Redirect to another page
+                window.location.href = '{% url "login" %}'; 
+            });
 
 
     </script>
