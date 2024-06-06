@@ -37,12 +37,12 @@
             box-sizing: border-box;
         }
         input[type="submit"] {
-            background-color: #4caf50;
+            background-color: #FF7320;
             color: white;
             cursor: pointer;
         }
         input[type="submit"]:hover {
-            background-color: #45a049;
+            background-color: #FF7320;
         }
     </style>
 </head>
@@ -50,8 +50,12 @@
     <div class="login-container">
         <h2>Login</h2>
         <form method="post" id="login_form">
+            <label for="email">Email</label>
             <input type="email" name="email" placeholder="Email" required>
+
+            <label for="password">Password</label>
             <input type="password" name="password" placeholder="Password" required>
+
             <input type="submit" value="Login" id="crsLoginButton">
         </form>
     </div>
@@ -61,7 +65,9 @@
         $("#login_form").submit(function(e) {
             e.preventDefault(); 
 
-            $('#crsLoginButton').val('loging in');
+            $('#crsLoginButton').val('logging in');
+
+            $('#crsLoginButton').css('background-color', '#f3925a');
 
             // Get form data 
             const formData = {

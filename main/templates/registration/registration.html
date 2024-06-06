@@ -39,12 +39,12 @@
             box-sizing: border-box;
         }
         input[type="submit"] {
-            background-color: #4caf50;
+            background-color: #FF7320;
             color: white;
             cursor: pointer;
         }
         input[type="submit"]:hover {
-            background-color: #45a049;
+            background-color: #FF7320;
         }
     </style>
 </head>
@@ -52,15 +52,28 @@
     <div class="registration-container">
         <h2>Registration</h2>
         <form  method="post" id="registeration_form">
-            {% csrf_token %}
+            <label for="company_name">Company name</label>
             <input type="text" name="company_name" placeholder="Company Name" required>
+            
+            <label for="contact_person">Contact person</label>
             <input type="text" name="contact_person" placeholder="Contact Person" required>
+            
+            <label for="email">Email</label>
             <input type="email" name="email" placeholder="Email" required>
+           
+            <label for="phone_number">Phone number</label>
             <input type="tel" name="phone_number" placeholder="Phone Number" required>
+            
+            <label for="business_licence_number">Business licence number</label>
             <input type="text" name="business_licence_number" placeholder="Business License Number" required>
+            
+            <label for="password">Password</label>
             <input type="password" name="password" placeholder="Password" required>
+
+            <label for="password2">Confirm password</label>
             <input type="password" name="password2" placeholder="Confirm Password" required>
-            <input type="submit" value="Register">
+
+            <input type="submit" id="crsRegisterButton" value="Register">
         </form>
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -69,7 +82,9 @@
         $("#registeration_form").submit(function(e) {
             console.log("Submitted");
             e.preventDefault(); // Prevent default form submission
+            $('#crsRegisterButton').val('Registering...');
 
+            $('#crsRegisterButton').css('background-color', '#f3925a');
             // Get form data 
             const formData = {
                 company_name: $("input[name='company_name']").val(),
@@ -88,15 +103,22 @@
                 contentType: "application/vnd.api+json", 
                 data: JSON.stringify({ data: { type: "RegistrationAPIView", attributes: formData } }), 
                 success: function(response) {
-                    console.log("Response:", response); 
-                  // Save tokens in local storage
+                    $('#crsRegisterButton').val('Register');
+
+                    $('#crsRegisterButton').css('background-color', '#FF7320');
+
+                    // Save tokens in local storage
                     localStorage.setItem("access_token", response.access_token);
                     localStorage.setItem("refresh_token", response.refresh_token);
 
                     // Redirect to desired URL after successful registration
                     window.location.href = "{% url 'dashboard' %}";
                 },
-                error: function(xhr, status, error) {   
+                error: function(xhr, status, error) {  
+                    
+                    $('#crsRegisterButton').val('Register');
+
+                    $('#crsRegisterButton').css('background-color', '#FF7320');
                     // Handle errors
                     console.error("Registration error", error);
                     var jsonResponse = JSON.parse(xhr.responseText);
