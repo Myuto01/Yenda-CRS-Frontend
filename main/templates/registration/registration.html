@@ -108,10 +108,12 @@
                     $('#crsRegisterButton').val('Register');
 
                     $('#crsRegisterButton').css('background-color', '#FF7320');
+                    
+                    console.log('Response', response)
 
                     // Save tokens in local storage
-                    localStorage.setItem("access_token", response.access_token);
-                    localStorage.setItem("refresh_token", response.refresh_token);
+                    localStorage.setItem("access_token", response.data.access_token);
+                    localStorage.setItem("refresh_token", response.data.refresh_token);
 
                     // Redirect to desired URL after successful registration
                     window.location.href = "{% url 'dashboard' %}";

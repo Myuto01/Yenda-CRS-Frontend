@@ -81,7 +81,7 @@
             $.ajax({
                 url: "https://yenda-crs-api-2.onrender.com/api/v1/auth/login/",
                 type: "POST",
-                contentType: "application/json", 
+                contentType: "application/vnd.api+json", 
                 data: JSON.stringify({ data: { type: "UserLoginView", attributes: formData } }), 
                 success: function(response) {
                     const accessToken = response.data.access_token;
@@ -98,6 +98,7 @@
                 error: function(xhr, status, error) {   
                     // Handle errors
                     $('#crsLoginButton').val('login');
+                    $('#crsLoginButton').css('background-color', '#FF7320');
                     var jsonResponse = JSON.parse(xhr.responseText);
                     var errorMessage = jsonResponse.errors.detail;
                     // Display error message
